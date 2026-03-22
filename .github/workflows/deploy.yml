@@ -32,12 +32,12 @@ jobs:
         run: "npm install"
 
       - name: Build step
-        run: "npm run build"
+        run: "npm run build-all"
 
       - name: Upload to Deno Deploy
         uses: denoland/deployctl@v1
         with:
-          project: "mediator-prod"
+          project: "mediator"
           entrypoint: "npm start"
           root: ""
           
