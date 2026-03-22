@@ -29,7 +29,7 @@ jobs:
           node-version: lts/*
 
       - name: Install step
-        run: "npm install && cd frontend && npm install"
+        run: "npm install && cd frontend && cd .. && npm install"
 
       - name: Build step
         run: "npm run build:all"
