@@ -61,7 +61,7 @@ export const authRoutes = Router();
 
 authRoutes.post(
   '/request-otp',
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.requestOtp', async (request, response) => {
     const payload = requestOtpSchema.parse(request.body);
     const result = await requestOtp(payload.email);
     response.status(202).json(result);
@@ -70,7 +70,7 @@ authRoutes.post(
 
 authRoutes.post(
   '/verify-otp',
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.verifyOtp', async (request, response) => {
     const payload = verifyOtpSchema.parse(request.body);
     const result = await verifyOtp(payload);
     response.json(result);
@@ -79,7 +79,7 @@ authRoutes.post(
 
 authRoutes.post(
   '/accept-invitation',
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.acceptInvitation', async (request, response) => {
     const payload = acceptInvitationSchema.parse(request.body);
     const result = await acceptInvitation(payload);
     response.json(result);
@@ -88,7 +88,7 @@ authRoutes.post(
 
 authRoutes.post(
   '/notification-link',
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.notificationLink', async (request, response) => {
     const payload = notificationLinkSchema.parse(request.body);
     const result = await signInWithNotificationLink(payload);
     response.json(result);
@@ -98,7 +98,7 @@ authRoutes.post(
 authRoutes.get(
   '/me',
   authenticateRequest,
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.me', async (request, response) => {
     const auth = requireAuth(request);
     const user = await UserModel.findById(auth.sub).exec();
 
@@ -117,7 +117,7 @@ authRoutes.get(
 authRoutes.patch(
   '/profile',
   authenticateRequest,
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.updateProfile', async (request, response) => {
     const auth = requireAuth(request);
     const payload = updateProfileSchema.parse(request.body);
     const result = await updateProfile({
@@ -134,7 +134,7 @@ authRoutes.patch(
 authRoutes.put(
   '/personality',
   authenticateRequest,
-  asyncHandler(async (request, response) => {
+  asyncHandler('auth.savePersonality', async (request, response) => {
     const auth = requireAuth(request);
     const payload = savePersonalitySchema.parse(request.body);
     const result = await savePersonality({

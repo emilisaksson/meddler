@@ -3,12 +3,15 @@
     "version": "0.1.0",
     "private": true,
     "scripts": { 
+        "install:frontend": "cd frontend && npm install --include=dev --no-fund --no-audit",
+        "postinstall": "npm run install:frontend",
         "dev": "concurrently -n server,client -c blue,magenta \"npm run dev:server\" \"npm --prefix frontend run start\"",
         "dev:server": "tsx watch src/server/index.ts",
         "build": "npm run build-all",
         "build:frontend": "npm --prefix frontend run build",
         "build:server": "tsc -p tsconfig.json",
         "build:all": "npm run build:server && npm run build:frontend",
+        "build-all": "npm run build:all",
         "start": "node dist/server/index.js",
         "worker:hourly": "tsx src/server/scheduled-workers/hourly/index.ts"
     }, 

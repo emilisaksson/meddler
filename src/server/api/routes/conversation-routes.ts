@@ -23,7 +23,7 @@ conversationRoutes.use(authenticateRequest);
 
 conversationRoutes.get(
   '/',
-  asyncHandler(async (request, response) => {
+  asyncHandler('conversations.list', async (request, response) => {
     const auth = requireAuth(request);
     const conversations = await listConversations(auth.sub);
     response.json({ conversations });
@@ -32,7 +32,7 @@ conversationRoutes.get(
 
 conversationRoutes.post(
   '/',
-  asyncHandler(async (request, response) => {
+  asyncHandler('conversations.create', async (request, response) => {
     const auth = requireAuth(request);
     const payload = createConversationSchema.parse(request.body);
 
@@ -50,7 +50,7 @@ conversationRoutes.post(
 
 conversationRoutes.get(
   '/:conversationId',
-  asyncHandler(async (request, response) => {
+  asyncHandler('conversations.getById', async (request, response) => {
     const auth = requireAuth(request);
     const conversationId = z.string().min(1).parse(request.params.conversationId);
     const conversation = await getConversationByIdForUser(conversationId, auth.sub);
@@ -60,7 +60,7 @@ conversationRoutes.get(
 
 conversationRoutes.post(
   '/:conversationId/messages',
-  asyncHandler(async (request, response) => {
+  asyncHandler('conversations.sendMessage', async (request, response) => {
     const auth = requireAuth(request);
     const payload = sendMessageSchema.parse(request.body);
     const conversationId = z.string().min(1).parse(request.params.conversationId);

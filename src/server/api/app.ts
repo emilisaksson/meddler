@@ -3,7 +3,9 @@ import { resolve } from 'node:path';
 import cors from 'cors';
 import express from 'express';
 import { appConfig } from '../app-config';
+import { apiNotFoundHandler } from './middlewares/api-not-found';
 import { errorHandler } from './middlewares/error-handler';
+import { requestLogging } from './middlewares/request-logging';
 import { authRoutes } from './routes/auth-routes';
 import { conversationRoutes } from './routes/conversation-routes';
 import { metaRoutes } from './routes/meta-routes';
@@ -26,9 +28,11 @@ export function createApp() {
       origin: [appConfig.frontendUrl, 'http://localhost:4200']
     })
   );
+  app.use(requestLogging);
   app.use(express.json({ limit: '1mb' }));
 
   app.get('/api/health', (_request, response) => {
+    response.locals.routeName = 'api.health';
     response.json({
       name: 'oliveaccord',
       status: 'ok'
@@ -38,6 +42,7 @@ export function createApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/conversations', conversationRoutes);
   app.use('/api/meta', metaRoutes);
+  app.use('/api', apiNotFoundHandler);
 
   if (frontendBuildDirectory) {
     app.use(express.static(frontendBuildDirectory, { index: false }));
