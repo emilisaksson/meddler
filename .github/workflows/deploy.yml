@@ -38,7 +38,5 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: "mediator"
-          entrypoint: "dist/server/index.js"
+          entrypoint: "dist/server/index.cjs"
           root: ""
-          
-          
