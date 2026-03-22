@@ -13,5 +13,7 @@ async function runHourlyWorker() {
 
 void runHourlyWorker().catch((error) => {
   console.error('oliveaccord hourly worker failed.', error);
-  process.exit(1);
+  queueMicrotask(() => {
+    throw error;
+  });
 });

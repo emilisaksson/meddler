@@ -12,21 +12,38 @@ async function startServer() {
   });
 
   const shutdown = async () => {
-    server.close();
+    await new Promise<void>((resolve, reject) => {
+      server.close((error) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        resolve();
+      });
+    });
+
     await mongoose.disconnect();
-    process.exit(0);
+  };
+
+  const handleShutdownSignal = () => {
+    void shutdown().catch((error) => {
+      console.error('Failed to shut down oliveaccord backend cleanly.', error);
+    });
   };
 
   process.on('SIGINT', () => {
-    void shutdown();
+    handleShutdownSignal();
   });
 
   process.on('SIGTERM', () => {
-    void shutdown();
+    handleShutdownSignal();
   });
 }
 
 void startServer().catch((error) => {
   console.error('Failed to start oliveaccord backend.', error);
-  process.exit(1);
+  queueMicrotask(() => {
+    throw error;
+  });
 });
