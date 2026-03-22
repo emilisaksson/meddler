@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+*.log
+
+frontend/.angular/
+frontend/node_modules/
+frontend/dist/
+
+.DS_Store
+Thumbs.db
