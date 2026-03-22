@@ -40,3 +40,5 @@ jobs:
           project: "mediator"
           entrypoint: "dist/server/index.cjs"
           root: ""
+          
+          
