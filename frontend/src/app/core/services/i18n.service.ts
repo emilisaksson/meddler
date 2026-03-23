@@ -134,10 +134,20 @@ const translations = {
       'Messages are visible only in your private thread. Olive will translate the intent for the other person.',
     'conversation.noCreditsPlaceholder': 'You have no credits left for new replies.',
     'conversation.noCreditsHint':
-      'You have used all available credits. Top-up will be added in a later step.',
+      'You have used all available credits. Choose a top-up package below to continue.',
     'conversation.noCreditsTitle': 'You are out of credits',
-    'conversation.noCreditsBody':
-      'You cannot send more replies until your credits are topped up. The top-up flow is not implemented yet.',
+    'conversation.noCreditsBody': 'You cannot send more replies until your credits are topped up.',
+    'conversation.topUpIntro':
+      'Choose a credit package and continue to Stripe Checkout. The currency follows your locale.',
+    'conversation.topUpCurrentCurrency': 'Charged in',
+    'conversation.topUpCreditsUnit': 'credits',
+    'conversation.topUpContinue': 'Continue to Stripe',
+    'conversation.topUpOpening': 'Opening Stripe Checkout...',
+    'conversation.topUpConfirming': 'Confirming your payment...',
+    'conversation.topUpSuccess': 'Your credits were added successfully.',
+    'conversation.topUpCanceled': 'Checkout was canceled before payment was completed.',
+    'conversation.topUpUnavailable':
+      'Credit top-up is temporarily unavailable. Please try again later.',
     'conversation.noCreditsClose': 'Close',
     'conversation.sendReply': 'Send reply',
     'conversation.sendingReply': 'Sending...',
@@ -285,10 +295,21 @@ const translations = {
       'Meddelanden syns bara i din privata tr\u00e5d. Olive omformulerar inneh\u00e5llet f\u00f6r den andra personen.',
     'conversation.noCreditsPlaceholder': 'Du har inga krediter kvar f\u00f6r nya svar.',
     'conversation.noCreditsHint':
-      'Du har anv\u00e4nt alla tillg\u00e4ngliga krediter. P\u00e5fyllning l\u00e4ggs till i ett senare steg.',
+      'Du har anv\u00e4nt alla tillg\u00e4ngliga krediter. V\u00e4lj ett p\u00e5fyllnadspaket nedan f\u00f6r att forts\u00e4tta.',
     'conversation.noCreditsTitle': 'Du har slut p\u00e5 krediter',
     'conversation.noCreditsBody':
-      'Du kan inte skicka fler svar f\u00f6rr\u00e4n dina krediter fylls p\u00e5. P\u00e5fyllningsfl\u00f6det \u00e4r inte implementerat \u00e4n.',
+      'Du kan inte skicka fler svar f\u00f6rr\u00e4n dina krediter fylls p\u00e5.',
+    'conversation.topUpIntro':
+      'V\u00e4lj ett kreditpaket och forts\u00e4tt till Stripe Checkout. Valutan f\u00f6ljer din spr\u00e5k- och landsinst\u00e4llning.',
+    'conversation.topUpCurrentCurrency': 'Debiteras i',
+    'conversation.topUpCreditsUnit': 'krediter',
+    'conversation.topUpContinue': 'Forts\u00e4tt till Stripe',
+    'conversation.topUpOpening': '\u00d6ppnar Stripe Checkout...',
+    'conversation.topUpConfirming': 'Bekr\u00e4ftar din betalning...',
+    'conversation.topUpSuccess': 'Dina krediter har lagts till.',
+    'conversation.topUpCanceled': 'Checkout avbr\u00f6ts innan betalningen slutf\u00f6rdes.',
+    'conversation.topUpUnavailable':
+      'P\u00e5fyllning av krediter \u00e4r tillf\u00e4lligt otillg\u00e4nglig. F\u00f6rs\u00f6k igen senare.',
     'conversation.noCreditsClose': 'St\u00e4ng',
     'conversation.sendReply': 'Skicka svar',
     'conversation.sendingReply': 'Skickar...',
@@ -365,5 +386,29 @@ export class I18nService {
   public goalLabel(goalKey: string, fallback: string): string {
     const key = `goal.${goalKey}` as TranslationKey;
     return translations[this.language()][key] ?? fallback;
+  }
+
+  public formatDateTime(
+    value: string | number | Date,
+    style: 'short' | 'medium' = 'short'
+  ): string {
+    const date = value instanceof Date ? value : new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return '';
+    }
+
+    const options =
+      style === 'medium'
+        ? ({
+            dateStyle: 'medium',
+            timeStyle: 'short'
+          } satisfies Intl.DateTimeFormatOptions)
+        : ({
+            dateStyle: 'short',
+            timeStyle: 'short'
+          } satisfies Intl.DateTimeFormatOptions);
+
+    return new Intl.DateTimeFormat(this.browserProfile().locale, options).format(date);
   }
 }

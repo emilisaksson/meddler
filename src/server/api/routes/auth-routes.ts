@@ -9,15 +9,18 @@ import { updateProfile } from '../../helpers/auth/update-profile';
 import { verifyOtp } from '../../helpers/auth/verify-otp';
 import { UserModel } from '../../integrations/mongodb/models/user-model';
 import { asyncHandler } from '../../utils/async-handler';
+import { ensureUserLocale } from '../../utils/locale';
 import { authenticateRequest, requireAuth } from '../middlewares/authenticate-request';
 import { AppError } from '../../utils/app-error';
 
-const requestOtpSchema = z.object({
-  email: z.string().trim().email()
-});
-
 const optionalNullableString = (maxLength: number) =>
   z.string().trim().max(maxLength).nullable().optional();
+
+const requestOtpSchema = z.object({
+  email: z.string().trim().email(),
+  language: optionalNullableString(16),
+  country: optionalNullableString(8)
+});
 
 const verifyOtpSchema = z.object({
   email: z.string().trim().email(),
@@ -63,7 +66,7 @@ authRoutes.post(
   '/request-otp',
   asyncHandler('auth.requestOtp', async (request, response) => {
     const payload = requestOtpSchema.parse(request.body);
-    const result = await requestOtp(payload.email);
+    const result = await requestOtp(payload);
     response.status(202).json(result);
   })
 );
@@ -106,6 +109,12 @@ authRoutes.get(
       throw new AppError('Authenticated user was not found.', 404, {
         code: 'user_not_found'
       });
+    }
+
+    const locale = ensureUserLocale(user);
+
+    if (locale.changed) {
+      await user.save();
     }
 
     response.json({

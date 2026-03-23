@@ -49,30 +49,30 @@ const questionsByLanguage: Record<'en' | 'sv', PersonalityQuestion[]> = {
   sv: [
     {
       id: 'communication-style',
-      question: 'Hur brukar du helst vilja att andra kommunicerar med dig nar ett amne ar svart?'
+      question: 'Hur brukar du helst vilja att andra kommunicerar med dig n\u00e4r ett \u00e4mne \u00e4r sv\u00e5rt?'
     },
     {
       id: 'response-style',
       question:
-        'Vilken typ av svar kanns mest hjalpsamma for dig: direkta, varsamma, detaljerade, korta eller nagot annat?'
+        'Vilken typ av svar k\u00e4nns mest hj\u00e4lpsamma f\u00f6r dig: direkta, varsamma, detaljerade, korta eller n\u00e5got annat?'
     },
     {
       id: 'feeling-heard',
-      question: 'Vad brukar fa dig att kanna dig forstadd och respekterad i ett samtal?'
+      question: 'Vad brukar f\u00e5 dig att k\u00e4nna dig f\u00f6rst\u00e5dd och respekterad i ett samtal?'
     },
     {
       id: 'sensitive-patterns',
       question:
-        'Finns det nagra formuleringar, tonlagen eller monster som brukar gora kommunikationen svarare for dig?'
+        'Finns det n\u00e5gra formuleringar, tonl\u00e4gen eller m\u00f6nster som brukar g\u00f6ra kommunikationen sv\u00e5rare f\u00f6r dig?'
     },
     {
       id: 'background-context',
       question:
-        'Vilken personlig bakgrund eller vilket sammanhang skulle hjalpa nagon att forsta var du kommer ifran?'
+        'Vilken personlig bakgrund eller vilket sammanhang skulle hj\u00e4lpa n\u00e5gon att f\u00f6rst\u00e5 var du kommer ifr\u00e5n?'
     },
     {
       id: 'anything-else',
-      question: 'Ar det nagot annat du vill dela som kan hjalpa mig att forsta dig battre?'
+      question: '\u00c4r det n\u00e5got annat du vill dela som kan hj\u00e4lpa mig att f\u00f6rst\u00e5 dig b\u00e4ttre?'
     }
   ]
 };

@@ -4,10 +4,13 @@ import { appConfig, isProduction } from '../../app-config';
 import { sendEmail } from '../../integrations/email/email-client';
 import { buildInvitationEmailTemplate } from '../../integrations/email/email-templates';
 import { ConversationModel } from '../../integrations/mongodb/models/conversation-model';
+import { UserModel } from '../../integrations/mongodb/models/user-model';
+import { INITIAL_USER_CREDITS } from '../../services/billing/credits';
 import { AppError } from '../../utils/app-error';
 import { createInvitationToken, hashSecret } from '../../utils/crypto';
 import { addHours } from '../../utils/dates';
 import { normalizeEmail } from '../../utils/email';
+import { ensureUserLocale } from '../../utils/locale';
 import { findConversationGoal } from './goal-options';
 import { buildConversationDetail, type ConversationDetailResponse } from './shared';
 
@@ -37,6 +40,47 @@ export async function createConversation(input: {
       code: 'invalid_goal'
     });
   }
+
+  const inviterUser = await UserModel.findById(input.inviterUserId).exec();
+
+  if (!inviterUser) {
+    throw new AppError('Authenticated user was not found.', 404, {
+      code: 'user_not_found'
+    });
+  }
+
+  const inviterLocale = ensureUserLocale(inviterUser);
+  const inviteeUser = await UserModel.findOneAndUpdate(
+    { email: inviteeEmail },
+    {
+      $setOnInsert: {
+        email: inviteeEmail,
+        credits: INITIAL_USER_CREDITS,
+        personality: null,
+        personalityResponses: []
+      }
+    },
+    {
+      upsert: true,
+      new: true
+    }
+  ).exec();
+
+  if (!inviteeUser) {
+    throw new AppError('Unable to prepare the invited participant.', 500, {
+      code: 'invitee_upsert_failed'
+    });
+  }
+
+  const inviteeLocale = ensureUserLocale(inviteeUser, {
+    language: inviterUser.language,
+    country: inviterUser.country
+  });
+
+  await Promise.all([
+    inviterLocale.changed ? inviterUser.save() : Promise.resolve(),
+    inviteeLocale.changed ? inviteeUser.save() : Promise.resolve()
+  ]);
 
   const invitationToken = createInvitationToken();
   const now = new Date();
@@ -75,6 +119,8 @@ export async function createConversation(input: {
   acceptUrl.searchParams.set('conversationId', conversation.id);
 
   const invitationTemplate = buildInvitationEmailTemplate({
+    goalKey: conversation.goal.key,
+    language: inviteeUser.language,
     issueDescription: conversation.issueDescription,
     goalLabel: conversation.goal.label,
     acceptUrl: acceptUrl.toString()

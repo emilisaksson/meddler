@@ -1,6 +1,7 @@
 import { UserModel } from '../../integrations/mongodb/models/user-model';
 import { AppError } from '../../utils/app-error';
-import { normalizeCountry, normalizeLanguage, normalizeOptionalText } from '../../utils/text';
+import { ensureUserLocale, resolveLocale } from '../../utils/locale';
+import { normalizeOptionalText } from '../../utils/text';
 import { buildPublicUserResponse } from './build-public-user-response';
 
 export async function updateProfile(input: {
@@ -26,8 +27,20 @@ export async function updateProfile(input: {
   }
 
   user.name = name;
-  user.language = normalizeLanguage(input.language) ?? user.language ?? null;
-  user.country = normalizeCountry(input.country) ?? user.country ?? null;
+
+  if (input.language !== undefined || input.country !== undefined) {
+    const locale = resolveLocale({
+      language: input.language ?? user.language,
+      country: input.country,
+      fallbackLanguage: user.language,
+      fallbackCountry: user.country
+    });
+
+    user.language = locale.language;
+    user.country = locale.country;
+  } else {
+    ensureUserLocale(user);
+  }
 
   await user.save();
 

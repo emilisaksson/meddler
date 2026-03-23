@@ -9,6 +9,18 @@ export interface AppUser {
   requiresProfileCompletion: boolean;
 }
 
+export interface CreditTopUpPackage {
+  id: string;
+  credits: number;
+  price: number;
+  currency: string;
+}
+
+export interface CreditTopUpCatalog {
+  currency: string;
+  packages: CreditTopUpPackage[];
+}
+
 export interface ConversationGoalOption {
   key: string;
   label: string;

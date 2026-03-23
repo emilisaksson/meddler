@@ -1,5 +1,6 @@
 import { UserModel } from '../../integrations/mongodb/models/user-model';
 import { AppError } from '../../utils/app-error';
+import { ensureUserLocale } from '../../utils/locale';
 import { buildPublicUserResponse } from './build-public-user-response';
 import {
   buildPersonalityResponses,
@@ -31,6 +32,7 @@ export async function savePersonality(input: {
 
   user.personalityResponses = responses;
   user.personality = generatePersonalityMarkdown(user, responses);
+  ensureUserLocale(user);
 
   await user.save();
 

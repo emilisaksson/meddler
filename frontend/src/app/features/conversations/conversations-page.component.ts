@@ -147,7 +147,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
                   </div>
                   <div class="rounded-[1.5rem] bg-[rgba(248,250,246,0.92)] px-4 py-3 text-sm text-[color:var(--text-muted)]">
                     <p class="m-0 font-medium text-[color:var(--text-strong)]">{{ i18n.turnStateLabel(conversation.turnState) }}</p>
-                    <p class="m-0 mt-2">{{ i18n.t('conversations.updated') }} {{ conversation.updatedAt | date: 'medium' }}</p>
+                    <p class="m-0 mt-2">{{ i18n.t('conversations.updated') }} {{ formatDateTime(conversation.updatedAt, 'medium') }}</p>
                   </div>
                 </div>
               </a>
@@ -186,6 +186,10 @@ export class ConversationsPageComponent {
 
   protected goalLabel(goalKey: string, fallback: string) {
     return this.i18n.goalLabel(goalKey, fallback);
+  }
+
+  protected formatDateTime(value: string, style: 'short' | 'medium' = 'short') {
+    return this.i18n.formatDateTime(value, style);
   }
 
   protected canSubmitInvite() {

@@ -192,7 +192,13 @@ export class LoginPageComponent {
     this.errorMessage.set(null);
 
     try {
-      await firstValueFrom(this.api.requestOtp(this.email()));
+      await firstValueFrom(
+        this.api.requestOtp(
+          this.email(),
+          this.browserProfile.language,
+          this.browserProfile.country
+        )
+      );
       this.otpRequested.set(true);
     } catch (error) {
       this.errorMessage.set(getApiErrorMessage(error, this.i18n.t('login.sendCodeError')));

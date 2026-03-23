@@ -7,10 +7,15 @@ import { providePrimeNG } from 'primeng/config';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { AnalyticsService } from './core/services/analytics.service';
 import { AuthStore } from './core/services/auth-store.service';
 
 function initializeAuth(authStore: AuthStore) {
   return () => authStore.hydrate();
+}
+
+function initializeAnalytics(analyticsService: AnalyticsService) {
+  return () => analyticsService.initialize();
 }
 
 export const appConfig: ApplicationConfig = {
@@ -29,6 +34,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [AuthStore],
       useFactory: initializeAuth
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [AnalyticsService],
+      useFactory: initializeAnalytics
     }
   ]
 };

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import type {
   AppUser,
+  CreditTopUpCatalog,
   ConversationDetail,
   ConversationGoalOption,
   ConversationSummary,
@@ -22,9 +23,10 @@ export class MediatorApiService {
     };
   }
 
-  public requestOtp(email: string) {
+  public requestOtp(email: string, language?: string | null, country?: string | null) {
     return this.http.post<{ email: string; expiresInMinutes: number }>('/api/auth/request-otp', {
-      email
+      email,
+      ...this.buildOptionalLocalePayload({ language, country })
     });
   }
 
@@ -87,6 +89,31 @@ export class MediatorApiService {
 
   public getGoals() {
     return this.http.get<{ goals: ConversationGoalOption[] }>('/api/meta/goals');
+  }
+
+  public getCreditTopUpOptions() {
+    return this.http.get<{ topUp: CreditTopUpCatalog }>('/api/billing/top-up-options');
+  }
+
+  public createCreditTopUpCheckoutSession(payload: {
+    packageId: string;
+    returnPath?: string | null;
+  }) {
+    return this.http.post<{ checkoutUrl: string }>('/api/billing/checkout-session', payload);
+  }
+
+  public confirmCreditTopUpCheckoutSession(sessionId: string) {
+    return this.http.post<{
+      status: 'paid' | 'pending';
+      user: AppUser;
+      topUp: {
+        credits: number;
+        currency: string;
+        amountTotal: number;
+      } | null;
+    }>('/api/billing/checkout-session/confirm', {
+      sessionId
+    });
   }
 
   public listConversations() {

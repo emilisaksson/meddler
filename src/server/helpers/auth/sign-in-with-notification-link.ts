@@ -6,7 +6,7 @@ import {
   verifyNotificationLinkToken
 } from '../../services/tokens/jwt-service';
 import { AppError } from '../../utils/app-error';
-import { normalizeCountry, normalizeLanguage } from '../../utils/text';
+import { ensureUserLocale } from '../../utils/locale';
 
 export async function signInWithNotificationLink(input: {
   token: string;
@@ -42,16 +42,10 @@ export async function signInWithNotificationLink(input: {
     });
   }
 
-  const language = normalizeLanguage(input.language);
-  const country = normalizeCountry(input.country);
-
-  if (!user.language && language) {
-    user.language = language;
-  }
-
-  if (!user.country && country) {
-    user.country = country;
-  }
+  ensureUserLocale(user, {
+    language: input.language,
+    country: input.country
+  });
 
   user.lastLoggedInAt = new Date();
   await user.save();

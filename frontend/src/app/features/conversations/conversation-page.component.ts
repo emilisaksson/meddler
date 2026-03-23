@@ -3,13 +3,18 @@ import { CommonModule } from '@angular/common';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { catchError, distinctUntilChanged, EMPTY, filter, interval, map, startWith, switchMap } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
 import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { TagModule } from 'primeng/tag';
-import type { ConversationDetail, ConversationMessage } from '../../core/models/api.models';
+import type {
+  ConversationDetail,
+  ConversationMessage,
+  CreditTopUpCatalog,
+  CreditTopUpPackage
+} from '../../core/models/api.models';
 import { AuthStore } from '../../core/services/auth-store.service';
 import { I18nService } from '../../core/services/i18n.service';
 import { MediatorApiService } from '../../core/services/mediator-api.service';
@@ -109,7 +114,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
                 <p class="m-0 text-sm uppercase tracking-[0.25em] text-[color:var(--text-muted)]">{{ i18n.t('conversation.privateThreadEyebrow') }}</p>
                 <h3 class="mt-2 text-2xl font-semibold text-[color:var(--text-strong)]">{{ i18n.t('conversation.privateThreadTitle') }}</h3>
               </div>
-              <p class="m-0 text-sm text-[color:var(--text-muted)]">{{ i18n.t('conversations.updated') }} {{ currentConversation.updatedAt | date: 'short' }}</p>
+              <p class="m-0 text-sm text-[color:var(--text-muted)]">{{ i18n.t('conversations.updated') }} {{ formatDateTime(currentConversation.updatedAt, 'short') }}</p>
             </div>
 
             <div class="mt-6 space-y-4">
@@ -125,7 +130,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
                         {{ message.authorType === 'participant' ? i18n.t('conversation.you') : i18n.t('conversation.mediator') }}
                       </span>
                       <span [class]="messageMetaClass(message)">
-                        {{ message.createdAt | date: 'short' }}
+                        {{ formatDateTime(message.createdAt, 'short') }}
                       </span>
                     </div>
                     <p class="m-0 whitespace-pre-wrap text-sm leading-7">{{ message.content }}</p>
@@ -158,13 +163,85 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
           {{ i18n.t('conversation.noCreditsBody') }}
         </p>
 
-        <div class="flex justify-end">
+        <p class="m-0 text-sm leading-6 text-[color:var(--text-muted)]">
+          {{ i18n.t('conversation.topUpIntro') }}
+        </p>
+
+        @if (topUpNotice()) {
+          <div class="rounded-[1.25rem] border border-[rgba(71,138,145,0.16)] bg-[rgba(71,138,145,0.08)] px-4 py-3 text-sm text-[color:var(--text-strong)]">
+            {{ topUpNotice() }}
+          </div>
+        }
+
+        @if (topUpError()) {
+          <div class="rounded-[1.25rem] border border-[rgba(177,73,74,0.18)] bg-[rgba(177,73,74,0.08)] px-4 py-3 text-sm text-[color:var(--danger-500)]">
+            {{ topUpError() }}
+          </div>
+        }
+
+        @if (isTopUpLoading()) {
+          <div class="rounded-[1.25rem] border border-dashed border-[rgba(36,65,72,0.12)] px-4 py-5 text-sm text-[color:var(--text-muted)]">
+            {{ i18n.t('conversation.loading') }}
+          </div>
+        } @else if (topUpCatalog(); as topUp) {
+          <div class="space-y-4 rounded-[1.5rem] border border-[rgba(36,65,72,0.08)] bg-[rgba(248,250,246,0.96)] p-4">
+            <p class="m-0 text-xs uppercase tracking-[0.22em] text-[color:var(--text-muted)]">
+              {{ i18n.t('conversation.topUpCurrentCurrency') }} {{ topUp.currency }}
+            </p>
+
+            <div class="grid gap-3">
+              @for (option of topUp.packages; track option.id) {
+                <button
+                  type="button"
+                  class="w-full rounded-[1.25rem] border px-4 py-4 text-left transition"
+                  [ngClass]="topUpPackageButtonClass(option.id)"
+                  (click)="selectedTopUpPackageId.set(option.id)"
+                >
+                  <div class="flex items-center justify-between gap-4">
+                    <div>
+                      <p class="m-0 text-base font-semibold text-[color:var(--text-strong)]">
+                        {{ formatCredits(option.credits) }} {{ i18n.t('conversation.topUpCreditsUnit') }}
+                      </p>
+                      <p class="mt-1 m-0 text-sm text-[color:var(--text-muted)]">{{ option.currency }}</p>
+                    </div>
+                    <p class="m-0 text-base font-semibold text-[color:var(--text-strong)]">
+                      {{ formatPrice(option) }}
+                    </p>
+                  </div>
+                </button>
+              }
+            </div>
+          </div>
+        } @else {
+          <div class="rounded-[1.25rem] border border-[rgba(177,73,74,0.18)] bg-[rgba(177,73,74,0.08)] px-4 py-3 text-sm text-[color:var(--danger-500)]">
+            {{ i18n.t('conversation.topUpUnavailable') }}
+          </div>
+        }
+
+        <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"
-            class="rounded-full border border-[color:var(--surface-900)] bg-[color:var(--surface-900)] px-5 py-3 text-sm font-semibold text-white transition"
+            class="rounded-full border border-[rgba(36,65,72,0.12)] bg-white px-5 py-3 text-sm font-semibold text-[color:var(--text-strong)] transition"
             (click)="outOfCreditsDialogVisible.set(false)"
           >
             {{ i18n.t('conversation.noCreditsClose') }}
+          </button>
+
+          <button
+            type="button"
+            class="rounded-full border border-[color:var(--surface-900)] bg-[color:var(--surface-900)] px-5 py-3 text-sm font-semibold text-white transition"
+            [disabled]="!canStartTopUp()"
+            [class.opacity-60]="!canStartTopUp()"
+            [class.cursor-not-allowed]="!canStartTopUp()"
+            (click)="startTopUpCheckout()"
+          >
+            {{
+              isTopUpConfirming()
+                ? i18n.t('conversation.topUpConfirming')
+                : isTopUpSubmitting()
+                  ? i18n.t('conversation.topUpOpening')
+                  : i18n.t('conversation.topUpContinue')
+            }}
           </button>
         </div>
       </div>
@@ -173,6 +250,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
 })
 export class ConversationPageComponent {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly api = inject(MediatorApiService);
   private readonly authStore = inject(AuthStore);
   private readonly destroyRef = inject(DestroyRef);
@@ -186,6 +264,13 @@ export class ConversationPageComponent {
   protected readonly conversationId = signal<string | null>(null);
   protected readonly draftMessage = signal('');
   protected readonly outOfCreditsDialogVisible = signal(false);
+  protected readonly topUpCatalog = signal<CreditTopUpCatalog | null>(null);
+  protected readonly selectedTopUpPackageId = signal<string | null>(null);
+  protected readonly isTopUpLoading = signal(false);
+  protected readonly isTopUpSubmitting = signal(false);
+  protected readonly isTopUpConfirming = signal(false);
+  protected readonly topUpError = signal<string | null>(null);
+  protected readonly topUpNotice = signal<string | null>(null);
 
   public constructor() {
     this.route.paramMap
@@ -218,10 +303,59 @@ export class ConversationPageComponent {
         this.isLoading.set(false);
         this.syncCreditDialogState();
       });
+
+    this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      const topUpStatus = params.get('topUp');
+      const sessionId = params.get('session_id');
+
+      if (topUpStatus === 'canceled') {
+        this.topUpNotice.set(this.i18n.t('conversation.topUpCanceled'));
+        this.topUpError.set(null);
+        this.outOfCreditsDialogVisible.set(true);
+        void this.ensureTopUpOptionsLoaded();
+        void this.clearTopUpQueryParams();
+        return;
+      }
+
+      if (topUpStatus === 'success' && sessionId) {
+        this.topUpNotice.set(this.i18n.t('conversation.topUpConfirming'));
+        this.topUpError.set(null);
+        this.outOfCreditsDialogVisible.set(true);
+        void this.confirmTopUpCheckoutSession(sessionId);
+      }
+    });
   }
 
   protected goalLabel(goalKey: string, fallback: string) {
     return this.i18n.goalLabel(goalKey, fallback);
+  }
+
+  protected formatDateTime(value: string, style: 'short' | 'medium' = 'short') {
+    return this.i18n.formatDateTime(value, style);
+  }
+
+  protected formatCredits(value: number) {
+    return new Intl.NumberFormat(this.userLocale(), {
+      minimumFractionDigits: Number.isInteger(value) ? 0 : 2,
+      maximumFractionDigits: 2
+    }).format(value);
+  }
+
+  protected formatPrice(option: CreditTopUpPackage) {
+    return new Intl.NumberFormat(this.userLocale(), {
+      style: 'currency',
+      currency: option.currency
+    }).format(option.price);
+  }
+
+  protected topUpPackageButtonClass(packageId: string) {
+    const isSelected = this.selectedTopUpPackageId() === packageId;
+
+    if (isSelected) {
+      return 'border-[color:var(--surface-900)] bg-white shadow-sm';
+    }
+
+    return 'border-[rgba(36,65,72,0.08)] bg-white/70 hover:border-[rgba(36,65,72,0.2)]';
   }
 
   protected messageBubbleClass(message: ConversationMessage): string {
@@ -246,6 +380,15 @@ export class ConversationPageComponent {
 
   protected canReply(conversation: ConversationDetail) {
     return conversation.canSend && this.hasAvailableCredits();
+  }
+
+  protected canStartTopUp() {
+    return (
+      !this.isTopUpLoading() &&
+      !this.isTopUpSubmitting() &&
+      !this.isTopUpConfirming() &&
+      this.selectedTopUpPackageId() !== null
+    );
   }
 
   protected replyPlaceholder(conversation: ConversationDetail) {
@@ -292,13 +435,43 @@ export class ConversationPageComponent {
     }
   }
 
+  protected async startTopUpCheckout() {
+    const packageId = this.selectedTopUpPackageId();
+
+    if (!packageId || !this.canStartTopUp()) {
+      return;
+    }
+
+    this.isTopUpSubmitting.set(true);
+    this.topUpError.set(null);
+    this.topUpNotice.set(this.i18n.t('conversation.topUpOpening'));
+
+    try {
+      const response = await firstValueFrom(
+        this.api.createCreditTopUpCheckoutSession({
+          packageId,
+          returnPath: this.router.url
+        })
+      );
+
+      window.location.assign(response.checkoutUrl);
+    } catch (error) {
+      this.topUpNotice.set(null);
+      this.topUpError.set(getApiErrorMessage(error, this.i18n.t('conversation.topUpUnavailable')));
+      this.isTopUpSubmitting.set(false);
+    }
+  }
+
   private syncCreditDialogState() {
     const credits = this.authStore.user()?.credits ?? 0;
 
     if (credits > 0) {
       this.hasShownOutOfCreditsDialog = false;
+      this.outOfCreditsDialogVisible.set(false);
       return;
     }
+
+    void this.ensureTopUpOptionsLoaded();
 
     if (!this.hasShownOutOfCreditsDialog) {
       this.outOfCreditsDialogVisible.set(true);
@@ -308,5 +481,88 @@ export class ConversationPageComponent {
 
   private isInsufficientCreditsError(error: unknown) {
     return error instanceof HttpErrorResponse && error.error?.code === 'insufficient_credits';
+  }
+
+  private async ensureTopUpOptionsLoaded(force = false) {
+    if (this.isTopUpLoading()) {
+      return;
+    }
+
+    if (!force && this.topUpCatalog()) {
+      return;
+    }
+
+    this.isTopUpLoading.set(true);
+
+    try {
+      const response = await firstValueFrom(this.api.getCreditTopUpOptions());
+      const currentSelection = this.selectedTopUpPackageId();
+      const selectedPackageStillExists = response.topUp.packages.some(
+        (entry) => entry.id === currentSelection
+      );
+
+      this.topUpCatalog.set(response.topUp);
+      this.topUpError.set(null);
+
+      if (!selectedPackageStillExists) {
+        this.selectedTopUpPackageId.set(response.topUp.packages[0]?.id ?? null);
+      }
+    } catch {
+      this.topUpCatalog.set(null);
+      this.selectedTopUpPackageId.set(null);
+      this.topUpError.set(this.i18n.t('conversation.topUpUnavailable'));
+    } finally {
+      this.isTopUpLoading.set(false);
+    }
+  }
+
+  private async confirmTopUpCheckoutSession(sessionId: string) {
+    if (this.isTopUpConfirming()) {
+      return;
+    }
+
+    this.isTopUpConfirming.set(true);
+
+    try {
+      const response = await firstValueFrom(this.api.confirmCreditTopUpCheckoutSession(sessionId));
+      this.authStore.updateUser(response.user);
+
+      if (response.status === 'paid') {
+        this.topUpNotice.set(this.i18n.t('conversation.topUpSuccess'));
+        this.topUpError.set(null);
+        this.hasShownOutOfCreditsDialog = false;
+        this.syncCreditDialogState();
+      } else {
+        this.topUpNotice.set(this.i18n.t('conversation.topUpConfirming'));
+      }
+    } catch (error) {
+      this.topUpNotice.set(null);
+      this.topUpError.set(getApiErrorMessage(error, this.i18n.t('conversation.topUpUnavailable')));
+    } finally {
+      this.isTopUpConfirming.set(false);
+      void this.clearTopUpQueryParams();
+    }
+  }
+
+  private userLocale() {
+    const user = this.authStore.user();
+
+    if (user?.language && user.country) {
+      return `${user.language}-${user.country}`;
+    }
+
+    return this.i18n.browserProfile().locale;
+  }
+
+  private async clearTopUpQueryParams() {
+    await this.router.navigate([], {
+      relativeTo: this.route,
+      replaceUrl: true,
+      queryParams: {
+        topUp: null,
+        session_id: null
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 }

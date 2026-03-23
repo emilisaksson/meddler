@@ -6,7 +6,8 @@ import { issueAccessToken } from '../../services/tokens/jwt-service';
 import { AppError } from '../../utils/app-error';
 import { hashSecret } from '../../utils/crypto';
 import { normalizeEmail } from '../../utils/email';
-import { normalizeCountry, normalizeLanguage, normalizeOptionalText } from '../../utils/text';
+import { ensureUserLocale } from '../../utils/locale';
+import { normalizeOptionalText } from '../../utils/text';
 import { buildPublicUserResponse } from './build-public-user-response';
 
 export async function verifyOtp(input: {
@@ -76,20 +77,15 @@ export async function verifyOtp(input: {
   }
 
   const name = normalizeOptionalText(input.name);
-  const language = normalizeLanguage(input.language);
-  const country = normalizeCountry(input.country);
 
   if (!user.name && name) {
     user.name = name;
   }
 
-  if (!user.language && language) {
-    user.language = language;
-  }
-
-  if (!user.country && country) {
-    user.country = country;
-  }
+  ensureUserLocale(user, {
+    language: input.language,
+    country: input.country
+  });
 
   await user.save();
 

@@ -4,7 +4,7 @@ import { INITIAL_USER_CREDITS } from '../../services/billing/credits';
 import { issueAccessToken } from '../../services/tokens/jwt-service';
 import { AppError } from '../../utils/app-error';
 import { hashSecret } from '../../utils/crypto';
-import { normalizeCountry, normalizeLanguage } from '../../utils/text';
+import { ensureUserLocale } from '../../utils/locale';
 import { buildPublicUserResponse } from './build-public-user-response';
 import { getEffectiveConversationStatus, getParticipantByKey } from '../conversations/shared';
 
@@ -33,7 +33,9 @@ export async function acceptInvitation(input: {
   }
 
   const invitee = getParticipantByKey(conversation, 'invitee');
+  const inviter = getParticipantByKey(conversation, 'inviter');
   const now = new Date();
+  const inviterUser = inviter.userId ? await UserModel.findById(inviter.userId).exec() : null;
 
   const user = await UserModel.findOneAndUpdate(
     { email: invitee.email },
@@ -60,16 +62,10 @@ export async function acceptInvitation(input: {
     });
   }
 
-  const language = normalizeLanguage(input.language);
-  const country = normalizeCountry(input.country);
-
-  if (!user.language && language) {
-    user.language = language;
-  }
-
-  if (!user.country && country) {
-    user.country = country;
-  }
+  ensureUserLocale(user, {
+    language: input.language ?? inviterUser?.language ?? null,
+    country: input.country ?? inviterUser?.country ?? null
+  });
 
   await user.save();
 

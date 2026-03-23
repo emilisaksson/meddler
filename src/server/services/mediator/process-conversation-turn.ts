@@ -8,6 +8,7 @@ import { ConversationModel, type ParticipantKey } from '../../integrations/mongo
 import { UserModel } from '../../integrations/mongodb/models/user-model';
 import { calculateCreditCost, getUserCredits } from '../billing/credits';
 import { AppError } from '../../utils/app-error';
+import { ensureUserLocale } from '../../utils/locale';
 import { issueNotificationLinkToken } from '../tokens/jwt-service';
 import { buildMediatorReply } from './build-mediator-reply';
 import { getPersonalityMarkdown } from '../../helpers/auth/personality-profile';
@@ -60,6 +61,8 @@ export async function processConversationTurn(
       code: 'sender_user_not_found'
     });
   }
+
+  ensureUserLocale(senderUser);
 
   try {
     const mediatorReply = await buildMediatorReply({
@@ -140,6 +143,8 @@ export async function processConversationTurn(
       })
     );
     const notificationTemplate = buildMediatorNotificationEmailTemplate({
+      goalKey: conversation.goal.key,
+      language: recipientUser.language,
       goalLabel: conversation.goal.label,
       openConversationUrl: openConversationUrl.toString()
     });
