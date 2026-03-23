@@ -1,4 +1,3 @@
-import nodemailer, { type Transporter } from 'nodemailer';
 import { appConfig } from '../../app-config';
 
 interface EmailPayload {
@@ -8,30 +7,36 @@ interface EmailPayload {
   html: string;
 }
 
-let transporter: Transporter | null = null;
-
-function getTransporter(): Transporter {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: appConfig.email.host,
-      port: appConfig.email.port,
-      secure: appConfig.email.secure,
-      auth: {
-        user: appConfig.email.user,
-        pass: appConfig.email.pass
-      }
-    });
-  }
-
-  return transporter;
+function getMailgunMessagesUrl(domain: string): string {
+  return new URL(`/v3/${domain}/messages`, `${appConfig.email.baseUrl}/`).toString();
 }
 
 export async function sendEmail(payload: EmailPayload): Promise<void> {
-  await getTransporter().sendMail({
+  const messagesUrl = getMailgunMessagesUrl(appConfig.email.domain);
+  const requestBody = new URLSearchParams({
     from: appConfig.email.from,
     to: payload.to,
     subject: payload.subject,
     text: payload.text,
     html: payload.html
   });
+
+  const response = await fetch(messagesUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${Buffer.from(`api:${appConfig.email.apiKey}`).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: requestBody.toString()
+  });
+
+  if (response.ok) {
+    return;
+  }
+
+  const responseBody = (await response.text()).trim();
+  const failureDetails = responseBody.length > 0 ? ` ${responseBody}` : '';
+  throw new Error(
+    `Mailgun email request to ${messagesUrl} failed with ${response.status} ${response.statusText}.${failureDetails}`.trim()
+  );
 }

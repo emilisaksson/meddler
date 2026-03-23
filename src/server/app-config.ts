@@ -3,14 +3,20 @@ import { z } from 'zod';
 
 loadEnvironment();
 
+const optionalNonEmptyString = z.preprocess((value) => {
+  if (typeof value === 'string' && value.trim().length === 0) {
+    return undefined;
+  }
+
+  return value;
+}, z.string().min(1).optional());
+
 const envSchema = z.object({
   PORT: z.string().optional(),
   FRONTEND_URL: z.string().optional(),
-  SMTP_HOST: z.string().min(1),
-  SMTP_PORT: z.string().min(1),
-  SMTP_USER: z.string().min(1),
-  SMTP_PASS: z.string().min(1),
-  SMTP_SECURE: z.string().optional(),
+  MAILGUN_API_KEY: z.string().min(1),
+  MAILGUN_DOMAIN: z.string().min(1),
+  MAILGUN_BASE_URL: optionalNonEmptyString,
   EMAIL_FROM: z.string().min(1),
   JWT_SECRET: z.string().min(1),
   JWT_EXPIRES_IN: z.string().min(1),
@@ -28,23 +34,13 @@ function toNumber(value: string, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function toBoolean(value: string | undefined, fallback: boolean): boolean {
-  if (value === undefined) {
-    return fallback;
-  }
-
-  return value.toLowerCase() === 'true';
-}
-
 export const appConfig = {
   port: toNumber(env.PORT ?? '4000', 4000),
   frontendUrl: env.FRONTEND_URL ?? 'http://localhost:4200',
   email: {
-    host: env.SMTP_HOST,
-    port: toNumber(env.SMTP_PORT, 587),
-    user: env.SMTP_USER,
-    pass: env.SMTP_PASS,
-    secure: toBoolean(env.SMTP_SECURE, false),
+    apiKey: env.MAILGUN_API_KEY,
+    domain: env.MAILGUN_DOMAIN,
+    baseUrl: env.MAILGUN_BASE_URL ?? 'https://api.mailgun.net',
     from: env.EMAIL_FROM
   },
   jwt: {
