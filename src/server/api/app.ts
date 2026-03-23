@@ -12,6 +12,10 @@ import { metaRoutes } from './routes/meta-routes';
 
 function resolveFrontendBuildDirectory(): string | null {
   const candidates = [
+    resolve(process.cwd(), 'dist', 'client', 'browser'),
+    resolve(process.cwd(), 'dist', 'client'),
+    resolve(__dirname, '..', 'client', 'browser'),
+    resolve(__dirname, '..', 'client'),
     resolve(__dirname, '..', '..', 'client', 'browser'),
     resolve(__dirname, '..', '..', 'client')
   ];
