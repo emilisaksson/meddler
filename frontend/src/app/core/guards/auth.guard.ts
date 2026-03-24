@@ -9,7 +9,7 @@ export const authGuard: CanActivateFn = async (_route, state) => {
   await authStore.hydrate();
 
   if (!authStore.isAuthenticated()) {
-    return router.createUrlTree(['/login']);
+    return router.createUrlTree(['/']);
   }
 
   if (authStore.requiresProfileCompletion() && !state.url.startsWith('/complete-profile')) {

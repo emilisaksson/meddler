@@ -137,11 +137,9 @@ const translations = {
       'You have used all available credits. Choose a top-up package below to continue.',
     'conversation.noCreditsTitle': 'You are out of credits',
     'conversation.noCreditsBody': 'You cannot send more replies until your credits are topped up.',
-    'conversation.topUpIntro':
-      'Choose a credit package and continue to Stripe Checkout. The currency follows your locale.',
     'conversation.topUpCurrentCurrency': 'Charged in',
     'conversation.topUpCreditsUnit': 'credits',
-    'conversation.topUpContinue': 'Continue to Stripe',
+    'conversation.topUpContinue': 'Proceed to payment',
     'conversation.topUpOpening': 'Opening Stripe Checkout...',
     'conversation.topUpConfirming': 'Confirming your payment...',
     'conversation.topUpSuccess': 'Your credits were added successfully.',
@@ -299,11 +297,9 @@ const translations = {
     'conversation.noCreditsTitle': 'Du har slut p\u00e5 krediter',
     'conversation.noCreditsBody':
       'Du kan inte skicka fler svar f\u00f6rr\u00e4n dina krediter fylls p\u00e5.',
-    'conversation.topUpIntro':
-      'V\u00e4lj ett kreditpaket och forts\u00e4tt till Stripe Checkout. Valutan f\u00f6ljer din spr\u00e5k- och landsinst\u00e4llning.',
     'conversation.topUpCurrentCurrency': 'Debiteras i',
     'conversation.topUpCreditsUnit': 'krediter',
-    'conversation.topUpContinue': 'Forts\u00e4tt till Stripe',
+    'conversation.topUpContinue': 'Proceed to payment',
     'conversation.topUpOpening': '\u00d6ppnar Stripe Checkout...',
     'conversation.topUpConfirming': 'Bekr\u00e4ftar din betalning...',
     'conversation.topUpSuccess': 'Dina krediter har lagts till.',

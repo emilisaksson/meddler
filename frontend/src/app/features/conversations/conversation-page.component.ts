@@ -97,6 +97,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
                       [disabled]="!canReply(currentConversation) || draftMessage().trim().length === 0"
                       class="w-full rounded-full border border-[color:var(--surface-900)] bg-[color:var(--surface-900)] px-5 py-3 text-sm font-semibold text-white transition sm:w-auto"
                       [class.opacity-60]="!canReply(currentConversation) || draftMessage().trim().length === 0"
+                      [class.cursor-pointer]="canReply(currentConversation) && draftMessage().trim().length > 0"
                       [class.cursor-not-allowed]="!canReply(currentConversation) || draftMessage().trim().length === 0"
                       (click)="sendMessage()"
                     >
@@ -163,10 +164,6 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
           {{ i18n.t('conversation.noCreditsBody') }}
         </p>
 
-        <p class="m-0 text-sm leading-6 text-[color:var(--text-muted)]">
-          {{ i18n.t('conversation.topUpIntro') }}
-        </p>
-
         @if (topUpNotice()) {
           <div class="rounded-[1.25rem] border border-[rgba(71,138,145,0.16)] bg-[rgba(71,138,145,0.08)] px-4 py-3 text-sm text-[color:var(--text-strong)]">
             {{ topUpNotice() }}
@@ -193,7 +190,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
               @for (option of topUp.packages; track option.id) {
                 <button
                   type="button"
-                  class="w-full rounded-[1.25rem] border px-4 py-4 text-left transition"
+                  class="w-full cursor-pointer rounded-[1.25rem] border px-4 py-4 text-left transition"
                   [ngClass]="topUpPackageButtonClass(option.id)"
                   (click)="selectedTopUpPackageId.set(option.id)"
                 >
@@ -221,7 +218,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
         <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"
-            class="rounded-full border border-[rgba(36,65,72,0.12)] bg-white px-5 py-3 text-sm font-semibold text-[color:var(--text-strong)] transition"
+            class="cursor-pointer rounded-full border border-[rgba(36,65,72,0.12)] bg-white px-5 py-3 text-sm font-semibold text-[color:var(--text-strong)] transition"
             (click)="outOfCreditsDialogVisible.set(false)"
           >
             {{ i18n.t('conversation.noCreditsClose') }}
@@ -232,6 +229,7 @@ import { getApiErrorMessage } from '../../core/utils/api-error';
             class="rounded-full border border-[color:var(--surface-900)] bg-[color:var(--surface-900)] px-5 py-3 text-sm font-semibold text-white transition"
             [disabled]="!canStartTopUp()"
             [class.opacity-60]="!canStartTopUp()"
+            [class.cursor-pointer]="canStartTopUp()"
             [class.cursor-not-allowed]="!canStartTopUp()"
             (click)="startTopUpCheckout()"
           >

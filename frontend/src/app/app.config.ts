@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { AnalyticsService } from './core/services/analytics.service';
 import { AuthStore } from './core/services/auth-store.service';
+import { SeoService } from './core/services/seo.service';
 
 function initializeAuth(authStore: AuthStore) {
   return () => authStore.hydrate();
@@ -16,6 +17,10 @@ function initializeAuth(authStore: AuthStore) {
 
 function initializeAnalytics(analyticsService: AnalyticsService) {
   return () => analyticsService.initialize();
+}
+
+function initializeSeo(seoService: SeoService) {
+  return () => seoService.initialize();
 }
 
 export const appConfig: ApplicationConfig = {
@@ -40,6 +45,12 @@ export const appConfig: ApplicationConfig = {
       multi: true,
       deps: [AnalyticsService],
       useFactory: initializeAnalytics
+    },
+    {
+      provide: APP_INITIALIZER,
+      multi: true,
+      deps: [SeoService],
+      useFactory: initializeSeo
     }
   ]
 };

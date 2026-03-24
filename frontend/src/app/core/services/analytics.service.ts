@@ -75,6 +75,7 @@ export class AnalyticsService {
   }
 
   private trackPageView() {
+    console.debug('Tracking page view');
     const analyticsWindow = this.getWindow();
     if (!analyticsWindow?.gtag) {
       return;

@@ -7,43 +7,89 @@ import { NotificationLoginPageComponent } from './features/auth/notification-log
 import { ConversationPageComponent } from './features/conversations/conversation-page.component';
 import { ConversationsPageComponent } from './features/conversations/conversations-page.component';
 import { AcceptInvitationPageComponent } from './features/invitations/accept-invitation-page.component';
+import { MarketingPageComponent } from './features/marketing/marketing-page.component';
 
 export const routes: Routes = [
   {
     path: '',
-    pathMatch: 'full',
-    redirectTo: 'conversations'
+    component: LoginPageComponent,
+    canActivate: [guestGuard],
+    data: {
+      seoKey: 'landing'
+    }
   },
   {
     path: 'login',
-    component: LoginPageComponent,
-    canActivate: [guestGuard]
+    pathMatch: 'full',
+    redirectTo: ''
+  },
+  {
+    path: 'how-it-works',
+    component: MarketingPageComponent,
+    canActivate: [guestGuard],
+    data: {
+      marketingPageId: 'how-it-works',
+      seoKey: 'howItWorks'
+    }
+  },
+  {
+    path: 'benefits',
+    component: MarketingPageComponent,
+    canActivate: [guestGuard],
+    data: {
+      marketingPageId: 'benefits',
+      seoKey: 'benefits'
+    }
+  },
+  {
+    path: 'who-its-for',
+    component: MarketingPageComponent,
+    canActivate: [guestGuard],
+    data: {
+      marketingPageId: 'who-its-for',
+      seoKey: 'whoItsFor'
+    }
   },
   {
     path: 'accept-invitation',
-    component: AcceptInvitationPageComponent
+    component: AcceptInvitationPageComponent,
+    data: {
+      seoKey: 'acceptInvitation'
+    }
   },
   {
     path: 'open-conversation',
-    component: NotificationLoginPageComponent
+    component: NotificationLoginPageComponent,
+    data: {
+      seoKey: 'openConversation'
+    }
   },
   {
     path: 'complete-profile',
     component: CompleteProfilePageComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: {
+      seoKey: 'completeProfile'
+    }
   },
   {
     path: 'conversations',
     component: ConversationsPageComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: {
+      seoKey: 'conversations'
+    }
   },
   {
     path: 'conversations/:conversationId',
     component: ConversationPageComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard],
+    data: {
+      seoKey: 'conversationDetail'
+    }
   },
   {
     path: '**',
-    redirectTo: 'conversations'
+    redirectTo: ''
   }
 ];
