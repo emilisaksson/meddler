@@ -102,7 +102,7 @@ export class MediatorApiService {
     return this.http.post<{ checkoutUrl: string }>('/api/billing/checkout-session', payload);
   }
 
-  public confirmCreditTopUpCheckoutSession(sessionId: string) {
+  public getCreditTopUpCheckoutStatus(topUpToken: string) {
     return this.http.post<{
       status: 'paid' | 'pending';
       user: AppUser;
@@ -112,7 +112,7 @@ export class MediatorApiService {
         amountTotal: number;
       } | null;
     }>('/api/billing/checkout-session/confirm', {
-      sessionId
+      topUpToken
     });
   }
 

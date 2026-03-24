@@ -107,12 +107,6 @@ const publicChromeByLanguage: Record<
                     </a>
                   }
                 </nav>
-
-                <p-button
-                  [label]="publicChrome().ctaLabel"
-                  routerLink="/"
-                  styleClass="!bg-[color:var(--surface-900)] !border-[color:var(--surface-900)]"
-                />
               </div>
             }
           </div>

@@ -19,7 +19,7 @@ const createCheckoutSessionSchema = z.object({
 });
 
 const confirmCheckoutSessionSchema = z.object({
-  sessionId: z.string().trim().min(1)
+  topUpToken: z.string().trim().uuid()
 });
 
 export const billingRoutes = Router();
@@ -54,11 +54,11 @@ billingRoutes.post(
 
 billingRoutes.post(
   '/checkout-session/confirm',
-  asyncHandler('billing.checkoutConfirm', async (request, response) => {
+  asyncHandler('billing.checkoutStatus', async (request, response) => {
     const auth = requireAuth(request);
     const payload = confirmCheckoutSessionSchema.parse(request.body);
     const result = await confirmCreditTopUpCheckoutSession({
-      sessionId: payload.sessionId,
+      topUpToken: payload.topUpToken,
       userId: auth.sub
     });
 

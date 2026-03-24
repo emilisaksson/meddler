@@ -4,6 +4,7 @@ import type { SupportedTopUpCurrency } from '../../../app-config';
 export interface CreditTopUp {
   userId: Types.ObjectId;
   stripeCheckoutSessionId: string;
+  checkoutReturnToken?: string | null;
   stripePaymentIntentId?: string | null;
   currency: SupportedTopUpCurrency;
   amountTotal: number;
@@ -27,6 +28,10 @@ const creditTopUpSchema = new Schema<CreditTopUp>(
       required: true,
       unique: true,
       index: true,
+      trim: true
+    },
+    checkoutReturnToken: {
+      type: String,
       trim: true
     },
     stripePaymentIntentId: {
@@ -66,6 +71,7 @@ const creditTopUpSchema = new Schema<CreditTopUp>(
 );
 
 creditTopUpSchema.index({ userId: 1, createdAt: -1 });
+creditTopUpSchema.index({ userId: 1, checkoutReturnToken: 1 }, { unique: true, sparse: true });
 
 export const CreditTopUpModel =
   (models.CreditTopUp as Model<CreditTopUp>) ||

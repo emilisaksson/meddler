@@ -20,6 +20,9 @@ import { I18nService } from '../../core/services/i18n.service';
 import { MediatorApiService } from '../../core/services/mediator-api.service';
 import { getApiErrorMessage } from '../../core/utils/api-error';
 
+const TOP_UP_STATUS_POLL_ATTEMPTS = 24;
+const TOP_UP_STATUS_POLL_DELAY_MS = 2500;
+
 @Component({
   selector: 'app-conversation-page',
   standalone: true,
@@ -253,6 +256,7 @@ export class ConversationPageComponent {
   private readonly authStore = inject(AuthStore);
   private readonly destroyRef = inject(DestroyRef);
   private hasShownOutOfCreditsDialog = false;
+  private isDestroyed = false;
 
   protected readonly i18n = inject(I18nService);
   protected readonly isLoading = signal(true);
@@ -271,6 +275,10 @@ export class ConversationPageComponent {
   protected readonly topUpNotice = signal<string | null>(null);
 
   public constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.isDestroyed = true;
+    });
+
     this.route.paramMap
       .pipe(
         map((params) => params.get('conversationId')),
@@ -304,7 +312,7 @@ export class ConversationPageComponent {
 
     this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       const topUpStatus = params.get('topUp');
-      const sessionId = params.get('session_id');
+      const topUpToken = params.get('topUpToken');
 
       if (topUpStatus === 'canceled') {
         this.topUpNotice.set(this.i18n.t('conversation.topUpCanceled'));
@@ -315,11 +323,11 @@ export class ConversationPageComponent {
         return;
       }
 
-      if (topUpStatus === 'success' && sessionId) {
+      if (topUpStatus === 'success') {
         this.topUpNotice.set(this.i18n.t('conversation.topUpConfirming'));
         this.topUpError.set(null);
         this.outOfCreditsDialogVisible.set(true);
-        void this.confirmTopUpCheckoutSession(sessionId);
+        void this.syncTopUpAfterCheckoutReturn(topUpToken);
       }
     });
   }
@@ -514,7 +522,7 @@ export class ConversationPageComponent {
     }
   }
 
-  private async confirmTopUpCheckoutSession(sessionId: string) {
+  private async syncTopUpAfterCheckoutReturn(topUpToken: string | null) {
     if (this.isTopUpConfirming()) {
       return;
     }
@@ -522,10 +530,11 @@ export class ConversationPageComponent {
     this.isTopUpConfirming.set(true);
 
     try {
-      const response = await firstValueFrom(this.api.confirmCreditTopUpCheckoutSession(sessionId));
-      this.authStore.updateUser(response.user);
+      const topUpCompleted = topUpToken
+        ? await this.pollTopUpStatus(topUpToken)
+        : await this.pollCurrentUserForTopUp();
 
-      if (response.status === 'paid') {
+      if (topUpCompleted) {
         this.topUpNotice.set(this.i18n.t('conversation.topUpSuccess'));
         this.topUpError.set(null);
         this.hasShownOutOfCreditsDialog = false;
@@ -558,9 +567,58 @@ export class ConversationPageComponent {
       replaceUrl: true,
       queryParams: {
         topUp: null,
+        topUpToken: null,
         session_id: null
       },
       queryParamsHandling: 'merge'
+    });
+  }
+
+  private async pollTopUpStatus(topUpToken: string) {
+    for (let attempt = 0; attempt < TOP_UP_STATUS_POLL_ATTEMPTS; attempt += 1) {
+      if (this.isDestroyed) {
+        return false;
+      }
+
+      const response = await firstValueFrom(this.api.getCreditTopUpCheckoutStatus(topUpToken));
+      this.authStore.updateUser(response.user);
+
+      if (response.status === 'paid') {
+        return true;
+      }
+
+      await this.waitForNextTopUpStatusAttempt(attempt);
+    }
+
+    return false;
+  }
+
+  private async pollCurrentUserForTopUp() {
+    for (let attempt = 0; attempt < TOP_UP_STATUS_POLL_ATTEMPTS; attempt += 1) {
+      if (this.isDestroyed) {
+        return false;
+      }
+
+      const response = await firstValueFrom(this.api.getCurrentUser());
+      this.authStore.updateUser(response.user);
+
+      if ((response.user.credits ?? 0) > 0) {
+        return true;
+      }
+
+      await this.waitForNextTopUpStatusAttempt(attempt);
+    }
+
+    return false;
+  }
+
+  private async waitForNextTopUpStatusAttempt(attempt: number) {
+    if (attempt >= TOP_UP_STATUS_POLL_ATTEMPTS - 1 || this.isDestroyed) {
+      return;
+    }
+
+    await new Promise<void>((resolve) => {
+      window.setTimeout(resolve, TOP_UP_STATUS_POLL_DELAY_MS);
     });
   }
 }

@@ -1,4 +1,4 @@
-import { Model, model, models, Schema } from 'mongoose';
+import { Model, model, models, Schema, Types } from 'mongoose';
 import { INITIAL_USER_CREDITS } from '../../../services/billing/credits';
 
 export interface UserPersonalityResponse {
@@ -15,6 +15,7 @@ export interface User {
   personality?: string | null;
   personalityResponses: UserPersonalityResponse[];
   credits: number;
+  appliedCreditTopUpIds: Types.ObjectId[];
   lastLoggedInAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
@@ -82,6 +83,11 @@ const userSchema = new Schema<User>(
       required: true,
       default: INITIAL_USER_CREDITS,
       min: 0
+    },
+    appliedCreditTopUpIds: {
+      type: [Schema.Types.ObjectId],
+      ref: 'CreditTopUp',
+      default: []
     },
     lastLoggedInAt: {
       type: Date,

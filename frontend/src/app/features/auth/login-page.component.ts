@@ -117,7 +117,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     namePlaceholder: 'Enter your name',
     codeLabel: 'One-time code',
     sendCodeLabel: 'Send my access code',
-    verifyCodeLabel: 'Open my workspace',
+    verifyCodeLabel: 'Continue',
     anotherEmailLabel: 'Use another email',
     ctaPoints: [
       'No password to remember',
@@ -230,7 +230,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     namePlaceholder: 'Ange ditt namn',
     codeLabel: 'Engångskod',
     sendCodeLabel: 'Skicka min engångskod',
-    verifyCodeLabel: 'Öppna min yta',
+    verifyCodeLabel: 'Fortsätt',
     anotherEmailLabel: 'Använd annan e-post',
     ctaPoints: [
       'Inget lösenord att komma ihåg',

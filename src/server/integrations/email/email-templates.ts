@@ -34,8 +34,8 @@ function renderEmailLayout(title: string, bodyHtml: string): string {
   return `
     <div style="background: #f3f7f4; padding: 32px 16px;">
       <div style="max-width: 620px; margin: 0 auto; border-radius: 24px; background: #ffffff; padding: 32px 28px; font-family: Arial, sans-serif; color: #132a2f; line-height: 1.6;">
-        <div style="margin-bottom: 24px; text-align: center;">
-          <img src="cid:${EMAIL_LOGO_CID}" alt="oliveaccord" style="display: block; max-width: 220px; width: 100%; height: auto; margin: 0 auto;">
+        <div style="margin-bottom: 24px; text-align: left;">
+          <img src="cid:${EMAIL_LOGO_CID}" alt="oliveaccord" style="display: block; width: 150px; max-width: 100%; height: auto; margin: 0;">
         </div>
         <h1 style="margin: 0 0 16px; font-size: 28px; line-height: 1.2;">${escapeHtml(title)}</h1>
         ${bodyHtml}

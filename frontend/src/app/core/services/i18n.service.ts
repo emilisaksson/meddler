@@ -299,7 +299,7 @@ const translations = {
       'Du kan inte skicka fler svar f\u00f6rr\u00e4n dina krediter fylls p\u00e5.',
     'conversation.topUpCurrentCurrency': 'Debiteras i',
     'conversation.topUpCreditsUnit': 'krediter',
-    'conversation.topUpContinue': 'Proceed to payment',
+    'conversation.topUpContinue': 'Fortsätt till betalning',
     'conversation.topUpOpening': '\u00d6ppnar Stripe Checkout...',
     'conversation.topUpConfirming': 'Bekr\u00e4ftar din betalning...',
     'conversation.topUpSuccess': 'Dina krediter har lagts till.',
