@@ -103,7 +103,7 @@ const seoContentByLanguage: Record<SupportedUiLanguage, Record<SeoKey, SeoConten
     landing: {
       title: 'oliveaccord | Privat AI-medling för svåra samtal',
       description:
-        'oliveaccord hjälper två personer genom svåra samtal med privata AI-medierade trådar, lugnare formuleringar och strukturerade steg framåt.',
+        'oliveaccord hjälper två personer genom svåra samtal med privata AI-medlade trådar, lugnare formuleringar och strukturerade steg framåt.',
       canonicalPath: '/',
       keywords:
         'AI-medling, svåra samtal, privat samtalsverktyg, konflikthantering, relationskommunikation, medlade meddelanden',

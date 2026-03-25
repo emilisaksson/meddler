@@ -121,7 +121,6 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     anotherEmailLabel: 'Use another email',
     ctaPoints: [
       'No password to remember',
-      'No public room to manage',
       'Start with a single secure email code'
     ],
     helperNote:
@@ -234,7 +233,6 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     anotherEmailLabel: 'Använd annan e-post',
     ctaPoints: [
       'Inget lösenord att komma ihåg',
-      'Inget publikt rum att hantera',
       'Börja med en säker kod via e-post'
     ],
     helperNote:
@@ -243,7 +241,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     benefitsTitle: 'Byggt för människor som vill ha ärlighet utan att varje meddelande blir ännu en tändpunkt.',
     benefits: [
       {
-        title: 'Skydda rå formulering',
+        title: 'Undvik rå formulering',
         body:
           'Du kan säga vad du menar i privat läge först. Olive hjälper till att hindra den skarpaste formuleringen från att bli nästa eskalering.'
       },

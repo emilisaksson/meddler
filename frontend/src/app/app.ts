@@ -48,6 +48,26 @@ const publicChromeByLanguage: Record<
   }
 };
 
+const publicFooterByLanguage: Record<
+  SupportedUiLanguage,
+  {
+    title: string;
+    emailLabel: string;
+    serviceLabel: string;
+  }
+> = {
+  en: {
+    title: 'Contact',
+    emailLabel: 'Email',
+    serviceLabel: 'oliveaccord is a service from'
+  },
+  sv: {
+    title: 'Kontakt',
+    emailLabel: 'E-post',
+    serviceLabel: 'oliveaccord \u00e4r en tj\u00e4nst fr\u00e5n'
+  }
+};
+
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, RouterLink, RouterLinkActive, ButtonModule, PersonalityPromptDialogComponent],
@@ -120,8 +140,27 @@ const publicChromeByLanguage: Record<
           <footer class="glass-panel mt-6 rounded-[2rem] px-5 py-5 sm:px-6">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div class="max-w-2xl">
-                <p class="m-0 text-base font-semibold text-[color:var(--text-strong)]">{{ publicChrome().footerTitle }}</p>
-                <p class="mt-2 text-sm leading-6 text-[color:var(--text-muted)]">{{ publicChrome().footerBody }}</p>
+                <p class="m-0 text-base font-semibold text-[color:var(--text-strong)]">{{ publicFooter().title }}</p>
+                <p class="mt-2 text-sm leading-6 text-[color:var(--text-muted)]">
+                  {{ publicFooter().emailLabel }}:
+                  <a
+                    href="mailto:info@oliveaccord.com"
+                    class="font-medium text-[color:var(--text-strong)] underline decoration-[rgba(71,138,145,0.35)] underline-offset-4"
+                  >
+                    info@oliveaccord.com
+                  </a>
+                </p>
+                <p class="mt-2 text-sm leading-6 text-[color:var(--text-muted)]">
+                  {{ publicFooter().serviceLabel }}
+                  <a
+                    href="https://ka50design.se"
+                    target="_blank"
+                    rel="noreferrer"
+                    class="font-medium text-[color:var(--text-strong)] underline decoration-[rgba(71,138,145,0.35)] underline-offset-4"
+                  >
+                    KA50 Design
+                  </a>
+                </p>
               </div>
 
               <nav class="flex flex-wrap items-center gap-2 text-sm">
@@ -148,6 +187,7 @@ export class App {
   protected readonly i18n = inject(I18nService);
   private readonly router = inject(Router);
   protected readonly publicChrome = computed(() => publicChromeByLanguage[this.i18n.language()]);
+  protected readonly publicFooter = computed(() => publicFooterByLanguage[this.i18n.language()]);
 
   protected brandLink() {
     return this.authStore.isAuthenticated() ? '/conversations' : '/';

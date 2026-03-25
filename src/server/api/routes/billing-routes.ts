@@ -69,6 +69,7 @@ billingRoutes.post(
 export const stripeWebhookHandler = asyncHandler(
   'billing.stripeWebhook',
   async (request, response) => {
+    console.log('Received Stripe webhook');
     if (!Buffer.isBuffer(request.body)) {
       throw new AppError('Stripe webhook expects a raw request body.', 400, {
         code: 'invalid_stripe_webhook_body'

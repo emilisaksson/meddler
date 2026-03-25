@@ -174,7 +174,7 @@ const translations = {
   },
   sv: {
     'app.brand': 'oliveaccord',
-    'app.tagline': 'Privata AI-medierade samtal',
+    'app.tagline': 'Privata AI-medlade samtal',
     'app.subtitle':
       'Privata tr\u00e5dar, lugnare formuleringar och strukturerad f\u00f6rst\u00e5else genom sv\u00e5ra samtal.',
     'app.signedInAs': 'Inloggad som',
