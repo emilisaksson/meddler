@@ -308,7 +308,7 @@ const marketingPageContentByLanguage: Record<
       eyebrow: 'Så fungerar det',
       title: 'En privat AI-medlare mellan två separata trådar.',
       lead:
-        'oliveaccord är byggt för svåra samtal där ärlighet behövs, men där råa formuleringar lätt förvärrar läget. Varje deltagare skriver privat till Olive, och Olive förmedlar avsikten i lugnare språk.',
+        'oliveaccord är byggt för svåra samtal där ärlighet behövs, men där skarpa formuleringar lätt förvärrar läget. Varje deltagare skriver privat till Olive, och Olive förmedlar avsikten i lugnare språk.',
       highlightsTitle: 'Så går det till i praktiken',
       highlights: [
         'Varje person får en privat tråd i stället för ett gemensamt chattrum.',
@@ -331,7 +331,7 @@ const marketingPageContentByLanguage: Record<
           body:
             'Deltagarna kan skriva ärligt i sin egen tråd. Olive omformulerar sedan avsikten till tydligare och lugnare språk innan den skickas vidare.',
           points: [
-            'Råa formuleringar visas inte direkt för den andra personen.',
+            'Skarpa formuleringar visas inte direkt för den andra personen.',
             'Känsla och avsikt bevaras utan att den skarpaste formuleringen skickas vidare.',
             'Resultatet blir ofta lättare att ta emot och svara på.'
           ]
@@ -351,7 +351,7 @@ const marketingPageContentByLanguage: Record<
       faqTitle: 'Vanliga frågor om medlingsflödet',
       faq: [
         {
-          question: 'Ser den andra personen mitt exakta råa meddelande?',
+          question: 'Ser den andra personen mitt meddelande exakt som jag skrev det?',
           answer:
             'Nej. Grundidén är att varje person skriver privat till Olive, och att Olive förmedlar en lugnare version av avsikten i stället för att visa originalformuleringen direkt.'
         },
@@ -402,7 +402,7 @@ const marketingPageContentByLanguage: Record<
       ],
       sections: [
         {
-          title: 'Skydda rå känsla utan att göra den till vapen',
+          title: 'Ge starka känslor utrymme utan att göra dem till vapen',
           body:
             'Människor behöver ofta säga vad de verkligen känner innan de kan säga det väl. oliveaccord skapar utrymme för det första utkastet utan att den hårdaste versionen skickas vidare som den är.',
           points: [
@@ -476,7 +476,7 @@ const marketingPageContentByLanguage: Record<
     },
     'who-its-for': {
       eyebrow: 'Vem det är för',
-      title: 'Byggt för samtal som betyder för mycket för att lämnas åt rå meddelandeton ensam.',
+      title: 'Byggt för samtal som betyder för mycket för att lämnas åt en hård ton och reaktiva svar.',
       lead:
         'oliveaccord är till för människor som bryr sig om relationen eller utfallet, men som behöver hjälp att ta sig igenom nästa svåra utbyte utan att göra läget värre.',
       highlightsTitle: 'Vanliga användningsfall',
@@ -509,7 +509,7 @@ const marketingPageContentByLanguage: Record<
         {
           title: 'Gränser, ursäkter och känsliga beslut',
           body:
-            'oliveaccord passar när någon behöver säga något svårt tydligt, men vill ha större chans att bli hörd än vad ett rått textmeddelande brukar ge.',
+            'oliveaccord passar när någon behöver säga något svårt tydligt, men vill ha större chans att bli hörd än vad ett textmeddelande skrivet i affekt brukar ge.',
           points: [
             'Sätta sundare gränser.',
             'Be om ursäkt utan att poängen försvinner i försvar.',

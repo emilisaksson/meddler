@@ -107,7 +107,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     tryEyebrow: 'Try it yourself',
     requestTitle: 'Get your private access code',
     requestBody:
-      'Enter your email and we will send a one-time code so you can start exploring the product immediately.',
+      'Enter your email and we will send a one-time code so you can start immediately.',
     verifyTitle: 'Finish setting up your account',
     verifyBody:
       'Add your name and the one-time code to open your private oliveaccord workspace.',
@@ -192,7 +192,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
       'oliveaccord ger varje person en privat tråd med Olive. Du kan vara ärlig i privat läge, Olive omformulerar budskapet, och den andra personen ser bara den lugnare versionen.',
     proofPills: [
       'Privata trådar',
-      'Inga råa originalmeddelanden',
+      'Inget skickas ordagrant vidare',
       'Guidat flöde ett steg i taget'
     ],
     howEyebrow: 'Så fungerar det',
@@ -219,7 +219,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     tryEyebrow: 'Prova själv',
     requestTitle: 'Hämta din privata engångskod',
     requestBody:
-      'Ange din e-postadress så skickar vi en engångskod så att du kan börja utforska produkten direkt.',
+      'Ange din e-postadress så skickar vi en engångskod så att ni kan börja direkt.',
     verifyTitle: 'Slutför din registrering',
     verifyBody:
       'Lägg till ditt namn och engångskoden för att öppna din privata oliveaccord-yta.',
@@ -241,7 +241,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     benefitsTitle: 'Byggt för människor som vill ha ärlighet utan att varje meddelande blir ännu en tändpunkt.',
     benefits: [
       {
-        title: 'Undvik rå formulering',
+        title: 'Undvik skarpa formuleringar',
         body:
           'Du kan säga vad du menar i privat läge först. Olive hjälper till att hindra den skarpaste formuleringen från att bli nästa eskalering.'
       },
@@ -279,7 +279,7 @@ const landingContentByLanguage: Record<SupportedUiLanguage, LandingContent> = {
     faqTitle: 'Vanliga frågor innan du provar',
     faq: [
       {
-        question: 'Ser den andra personen mitt råa meddelande?',
+        question: 'Ser den andra personen mitt meddelande exakt som jag skrev det?',
         answer:
           'Nej. oliveaccord är byggt så att varje deltagare skriver privat till Olive och att Olive förmedlar avsikten i lugnare form.'
       },

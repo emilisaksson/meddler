@@ -123,7 +123,7 @@ const seoContentByLanguage: Record<SupportedUiLanguage, Record<SeoKey, SeoConten
     benefits: {
       title: 'Fördelar med oliveaccord | Lugnare och mer privata samtal',
       description:
-        'Se hur oliveaccord minskar eskalering, skyddar råa formuleringar och hjälper människor vidare med tydligare och mer konstruktiv kommunikation.',
+        'Se hur oliveaccord minskar eskalering, fångar upp skarpa formuleringar och hjälper människor vidare med tydligare och mer konstruktiv kommunikation.',
       canonicalPath: '/benefits',
       keywords:
         'fördelar med AI-medling, lugnare kommunikation, privata meddelanden, stöd i relationskonflikter',
